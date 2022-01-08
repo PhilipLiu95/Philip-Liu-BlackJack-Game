@@ -10,14 +10,22 @@ import os
 
 #Global array which represents the deck of cards
 deck = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]*4
+bet = 0
+money = 100
+#intro to the game
+print("Welcome to BlackJack!")
+bet = input ("How much money would you like to spend. You total is $" + str(money) + " ")
 
 #A function that randomizes the order of the deck
 def newDeck(deck):
     hand = []
     #loops through the deck and pushes cards to the front of the deck
     for i in range (2):
+        #shuffle the deck
         random.shuffle(deck)
+        #take a card from the deck
         card = deck.pop()
+        #setting the 11,12,13,14 cards to face cards
         if card == 11:card = "J"
         if card == 12:card = "Q"
         if card == 13:card = "K"
@@ -27,8 +35,13 @@ def newDeck(deck):
 
 #A function that asks the user if they would like to play again
 def playAgain():
+    #use global variables for money and bet
+    global money
+    global bet
     reload = input ("Would you like to play again? (Y/N): ").lower()
     if reload == "y":
+        #input the amount of money you want to bet
+        bet = input ("How much money would you like to spend. You total is $" + str(money) + " ")
         game()
     else:
         print("Thanks for playing!")
@@ -76,23 +89,31 @@ def printResults(dealerHand, playerHand):
 
 #A function that sees if the player or dealer had hit 21 within the first 2 cards
 def blackjack(dealerHand, playerHand):
+    #use global variables for money and bet
+    global bet
+    global money
     #If the player hits 21
-	if total(playerHand) == 21:
-		printResults(dealerHand, playerHand)
-		print ("Congratulations! You got a Blackjack!\n")
-		playAgain()
+    if total(playerHand) == 21:
+        printResults(dealerHand, playerHand)
+        print ("Congratulations! You got a Blackjack!\n")
+        #gain double if you get 21
+        money = money + (bet * 2)
+        playAgain()
     #if the dealer hits 21
-	elif total(dealerHand) == 21:
-		printResults(dealerHand, playerHand)		
-		print ("Sorry, you lose. The dealer got a blackjack.\n")
-		playAgain()
+    elif total(dealerHand) == 21:
+        printResults(dealerHand, playerHand)		
+        print ("Sorry, you lose. The dealer got a blackjack.\n")
+        #lose double if the dealer has 21
+        money = money - (bet * 2)
+        playAgain()
 
 #The main function where the game is played
 def game():
+    #use global variables for money and bet
+    global bet
+    global money
     choice = 0
     clear()
-    #intro to the game
-    print("Welcome to BlackJack!")
     #setting the dealers and players hands
     dealerHand = newDeck(deck)
     playerHand = newDeck(deck)
@@ -114,6 +135,7 @@ def game():
             #if the player busts
             if total(playerHand)>21:
                 print('You busted')
+                money -= int(bet)
                 playAgain()
         #if the user selects to stay
         elif choice=='s':
@@ -127,18 +149,21 @@ def game():
                     #if the dealer busts then the player wins
                     if total (dealerHand) > 21:
                         print("Dealer busts. You win!")
+                        money += int(bet)
                         playAgain()
                 #if the dealers total is larger than the players total
                 elif total(dealerHand) > total(playerHand):
                     #the dealer wins and the player loses
                     print(dealerHand)
                     print("Dealer has a higher score. You lose")
+                    money -= int(bet)
                     playAgain()
                 #if the dealers hand is equal to the players hand
                 elif total (dealerHand) == total(playerHand):
                     #The dealer has tied with the player and the game is over
                     print(dealerHand)
                     print("You tied!")
+                    money = money
                     playAgain()
         #if the user selects to quit the game
         elif choice == "q":
